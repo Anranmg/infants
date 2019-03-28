@@ -182,4 +182,39 @@ comp.plot(data.mix.up, x=quote(WSDS))
 comp.plot(data.mix.up, x=quote(lSDS))
 comp.plot(data.mix.up, x=quote(hcSDS))
 
-  
+
+                   
+
+
+t_test=function(x, data=data.mix.up, m=0){
+  data.m=data
+  data=data.m%>%filter(month==m)
+  data$month=factor(data$month)
+  id.del= data%>%
+    filter(is.na(trt) | is.na(data[[x]]))%>%
+    select(ID)%>%
+    distinct()
+  d=anti_join(data,id.del, by='ID')
+  # differenc in mean
+  t.test(d[[x]][d$trt==1], d[[x]][d$trt==0], alternative = "two.sided", var.equal = FALSE)
+}
+
+
+
+
+for (i in c(0,1,4,12,24)){
+  print(i)
+  print(t_test('lSDS',m=i))
+}
+
+for (i in c(0,1,4,12,24)){
+  print(i)
+  print(t_test('hcSDS',m=i))
+}
+
+for (i in c(0,1,4,12,24)){
+  print(i)
+  print(t_test('WSDS', data=data.mix, m=i))
+}
+
+# boxplt
