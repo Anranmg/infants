@@ -137,19 +137,49 @@ ranova('HC', data.mix)
 # hcSDS------------------------------
 ranova('hcSDS', data.mix)
 
-                   
-                   
-                   
-                   
-                   
-                   
-# above 5 set trt=1, belw trt=0
-proc mixed data=infants;
-  class trt month ID;
-  model weight=trt month month*trt / ddfm=hr;
-  random ID / subject= trt;
-  repeated month / subject=ID(trt) type=a(1);
-  lsmeans month*trt;
-run;
+
+# individual plot------------------------------------                  
+comp.plot=function(data=data.mix, x=quote(weight_gr)){
+  data=data.mix
+  a=range(data[[x]], na.rm=T)[1]
+  b=range(data[[x]], na.rm=T)[2]
   
+  mn=data%>%
+    group_by(trt,month)%>%
+    summarize(f=mean(eval(x), na.rm=T))
+  names(mn)[3]=paste(x)
+  
+  plot.below=
+    data%>%
+    filter(trt==0)%>%
+    ggplot()+
+    geom_line(aes(x=month, y=eval(x), group=ID, color=ID), show.legend = FALSE)+
+    geom_line(data=filter(mn, trt==0), aes(x=month, y=eval(x),group=trt), color='black', size=2)+
+    ylab(paste(x))+
+    scale_y_continuous(limits=c(a, b))
+  
+  plot.above=
+    data%>%
+    filter(trt==1)%>%
+    ggplot()+
+    geom_line(aes(x=month, y=eval(x), group=ID, color=ID), show.legend = FALSE)+
+    geom_line(data=filter(mn, trt==1), aes(x=month, y=eval(x),group=trt), color='black', size=2)+
+    ylab(paste(x))+
+    scale_y_continuous(limits=c(a, b))
+  
+  cowplot::plot_grid(plot.below, plot.above, labels=c('below 5', 'above 5'))
+}
+
+comp.plot(quote(weight_gr))
+comp.plot(x=quote(length))
+comp.plot(x=quote(HC))
+comp.plot(x=quote(WSDS))
+comp.plot(x=quote(lSDS))
+comp.plot(x=quote(hcSDS))
+
+# on imputated data set---------------------
+comp.plot(data.mix.up, x=quote(WSDS))
+comp.plot(data.mix.up, x=quote(lSDS))
+comp.plot(data.mix.up, x=quote(hcSDS))
+
   
