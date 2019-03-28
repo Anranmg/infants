@@ -55,6 +55,77 @@ data.mix.up=Reduce(function(x,y) full_join(x,y,by=c('ID','trt','month')), list(d
                                                                             dt.str('hcSDS', data=data.up)))
 write.csv(data.mix.up, 'mixdata2.csv')
 
+# ranova for dataset 
+# Repeated measures ANOVA: differences in mean scores under three or more different conditions, level (or related group)
+# null hypothesis (H0) is that mean is the same at all time points
+
+ranova=function(x, data=data.mix.up){
+  data.mix=data
+  data.mix$month=factor(data.mix$month, levels= c("0" , "1" , "4", "12", "24"))
+  # create balanced dataset
+  id.del= data.mix%>%
+    filter(is.na(trt) | is.na(data.mix[[x]]))%>%
+    select(ID)%>%
+    distinct()
+  
+  # p-value
+  d=anti_join(data.mix,id.del, by='ID')
+  WSDS.aov=aov(d[[x]]~(month*trt) + Error(ID/(month)), anti_join(data.mix,id.del, by='ID'))
+  print(summary(WSDS.aov))
+  
+  # plot mean-graph
+  interaction.plot(d$month, d$trt, d[[x]],type="b", 
+                   col=c(3,4), legend=F,lty=c(1,2), lwd=2, pch=c(2,4),
+                   ylab="mean of outcome",main=x)
+  legend("bottomright", c('below 5','above 5'), bty="n",lty=c(1,2),lwd=2,pch=c(2,4), col=c(3,4), 
+         title="pAHI",inset = .02)
+}
+
+
+# import dataset
+data.mix.up=read.csv('mixdata2.csv')
+names(data.mix.up)
+
+# wsds---------------------
+# create balanced dataset
+ranova('WSDS')
+
+# lSDS----------------------
+ranova('lSDS')
+
+# hcSDS--------------------
+ranova('hcSDS')
+
+
+
+# import original dataset------------------------------------------------------------------------------
+data.mix=read.csv('mixdata.csv')
+names(data.mix)
+
+# weight--------------------------
+ranova('weight_gr', data.mix)
+
+# WSDS-----------------------------
+ranova('WSDS', data.mix)
+
+# length---------------------------
+ranova('length', data.mix)
+
+# lSDS-----------------------------
+ranova('lSDS', data.mix)
+
+# HC--------------------------------
+ranova('HC', data.mix)
+
+# hcSDS------------------------------
+ranova('hcSDS', data.mix)
+
+                   
+                   
+                   
+                   
+                   
+                   
 # above 5 set trt=1, belw trt=0
 proc mixed data=infants;
   class trt month ID;
