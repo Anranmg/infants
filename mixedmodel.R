@@ -46,15 +46,32 @@ dt.str=function(x,data=data.n){
 
 data.mix=Reduce(function(x,y) full_join(x,y,by=c('ID','trt','month')), list(dt.str('weight_gr'), dt.str('length'), dt.str('HC$'),
                                                   dt.str('WSDS'), dt.str('[^//]lSDS$'), dt.str('hcSDS')))
-write.csv(data.mix, 'mixdata.csv')
 
 # model on imptued dataset
 data.up=read.csv('imputation.csv')
 data.mix.up=Reduce(function(x,y) full_join(x,y,by=c('ID','trt','month')), list(dt.str('WSDS', data=data.up), 
                                                                             dt.str('[^/.]lSDS$', data=data.up), 
                                                                             dt.str('hcSDS', data=data.up)))
-write.csv(data.mix.up, 'mixdata2.csv')
 
+data.mix.bl= data.mix%>%
+  group_by(ID)%>%
+  mutate(bd.weight_gr= (sum(is.na(trt))==0 & sum(is.na(weight_gr))==0) *1)%>%
+  mutate(bd.length = (sum(is.na(trt))==0 & sum(is.na(length))==0) *1)%>%
+  mutate(bd.HC = (sum(is.na(trt))==0 & sum(is.na(HC))==0) *1)%>%
+  mutate(bd.WSDS = (sum(is.na(trt))==0 & sum(is.na(WSDS))==0) *1)%>%
+  mutate(bd.lSDS= (sum(is.na(trt))==0 & sum(is.na(lSDS))==0) *1)%>%
+  mutate(bd.hcSDS = (sum(is.na(trt))==0 & sum(is.na(hcSDS))==0) *1)
+write.csv(data.mix.bl, 'bl_mixdata.csv')
+                   
+                   
+data.mix.up.bl= data.mix.up%>%
+  group_by(ID)%>%
+  mutate(bd.WSDS = (sum(is.na(trt))==0 & sum(is.na(WSDS))==0) *1)%>%
+  mutate(bd.lSDS= (sum(is.na(trt))==0 & sum(is.na(lSDS))==0) *1)%>%
+  mutate(bd.hcSDS = (sum(is.na(trt))==0 & sum(is.na(hcSDS))==0) *1)                   
+write.csv(data.mix.up.bl, 'bl_mixdata_imput.csv')                   
+                   
+                   
 # ranova for dataset 
 # Repeated measures ANOVA: differences in mean scores under three or more different conditions, level (or related group)
 # null hypothesis (H0) is that mean is the same at all time points
