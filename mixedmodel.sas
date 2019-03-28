@@ -2,9 +2,9 @@
 
 * data structure;
 * ID, weight, month, trt;
-proc import datafile = '/folders/myfolders/SASCrunch/mixdata.csv' out = infants dbms = csv;
+proc import datafile = '/folders/myfolders/SASCrunch/bl_mixdata.csv' out = infants dbms = csv;
 
-proc import datafile = '/folders/myfolders/SASCrunch/mixdata2.csv' out = infants.up dbms = csv;
+proc import datafile = '/folders/myfolders/SASCrunch/bl_mixdata_imput.csv' out = infants.up dbms = csv;
 
 proc contents data= infants;
 run;
@@ -13,7 +13,7 @@ run;
 data infant.m;
   set infants;
   keep trt month ID weight_gr;
-  if bd==1;
+  if bd.weight_gr==1;
 run;
 
 * above 5 set trt=1, belw trt=0;
