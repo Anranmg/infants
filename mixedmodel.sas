@@ -9,8 +9,15 @@ proc import datafile = '/folders/myfolders/SASCrunch/mixdata2.csv' out = infants
 proc contents data= infants;
 run;
 
+* create balance dataset for sas;
+data infant.m;
+  set infants;
+  keep trt month ID weight_gr;
+  if bd==1;
+run;
+
 * above 5 set trt=1, belw trt=0;
-proc mixed data=infants;
+proc mixed data=infant.m;
   class trt month ID;
   model weight_gr=trt month month*trt / ddfm=hr;
   random ID / subject= trt;
