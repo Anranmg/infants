@@ -170,7 +170,7 @@ comp.plot=function(data=data.mix, x=quote(weight_gr)){
   cowplot::plot_grid(plot.below, plot.above, labels=c('below 5', 'above 5'))
 }
 
-comp.plot(quote(weight_gr))
+comp.plot()
 comp.plot(x=quote(length))
 comp.plot(x=quote(HC))
 comp.plot(x=quote(WSDS))
