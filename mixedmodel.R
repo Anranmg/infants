@@ -23,6 +23,7 @@ data.n[data.n$ID=='31989644',4]=1.6
 data.n[data.n$ID=='40336307',137]=1.6
 data.n[data.n$ID=='328716212',137]=1.6
 data.n[data.n$ID=='37149101',135]=1.74
+data.n[data.n$ID=='40336307',46]=3.32
 
 # prepare different dataset for mixed model
 # model on original dataset: 
