@@ -223,7 +223,7 @@ for (i in c(0,1,4,12,24)){
                    
                    
                    
-                   feature=function(x){
+ feature=function(x){
   baby.features=
     data%>%
     select(ID,contains(x))
@@ -240,4 +240,20 @@ for (i in c(0,1,4,12,24)){
   # change ID to factor
   features_growth$ID=factor(features_growth$ID)
   return(features_growth)
+}
+
+                             
+                             # visualize growth of this type feature
+visualization=function(length_growth){
+  ggplot(length_growth, aes(x=month, y=features, group=ID, color=ID))+
+    geom_point(show.legend = FALSE)
+  
+  ggplot(length_growth)+
+    geom_line(aes(x=month, y=features, group=ID, color=ID), show.legend = FALSE)+
+    geom_line(data=mn(length_growth), aes(x=month, y=features), color='black', size=2)
+  
+#  p=ggplot(length_growth, aes(x=month, y=features))+
+#    geom_point(aes(colour= factor(month)))
+#  p+transition_states(
+#    month, transition_length = 2, state_length = 1) 
 }
