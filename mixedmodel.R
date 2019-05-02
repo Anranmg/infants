@@ -218,3 +218,26 @@ for (i in c(0,1,4,12,24)){
 }
 
 # boxplt
+                   
+                   
+                   
+                   
+                   
+                   feature=function(x){
+  baby.features=
+    data%>%
+    select(ID,contains(x))
+  baby.features$miss.n=apply(baby.weights,1,function(x) sum(is.na(x)))
+  knitr::kable(baby.features)
+  hist(baby.weights$miss.n, main=paste0('# of missing data in ', x, ' across time'), xlab='n')
+  features_growth=baby.features[,-7]
+  names(features_growth)=c('ID','0','1','4','12','24')
+  features_growth=
+    tidyr::gather(features_growth,month,features,-ID)%>%
+    arrange(ID)
+  # change str to integer
+  features_growth$month=strtoi(features_growth$month, base = 0L)
+  # change ID to factor
+  features_growth$ID=factor(features_growth$ID)
+  return(features_growth)
+}
