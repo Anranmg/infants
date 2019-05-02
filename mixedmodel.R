@@ -257,3 +257,32 @@ visualization=function(length_growth){
 #  p+transition_states(
 #    month, transition_length = 2, state_length = 1) 
 }
+                             
+# cut-off point
+`%not_in%`=purrr::negate(`%in%`)
+
+cut.plot=function(x, value, weight_growth.new, mean.data=mn_weight, y=quote(weight),a=0,b=15){
+  cutpoint=data%>%
+    filter(eval(x)<value)%>%
+    select(ID)
+  
+  plot.below=
+    weight_growth.new%>%
+    filter(ID %in% cutpoint$ID)%>%
+    ggplot()+
+    geom_line(aes(x=month, y=eval(y), group=ID, color=ID), show.legend = FALSE)+
+    geom_line(data=mean.data, aes(x=month, y=eval(y)), color='black', size=2)+
+    scale_y_continuous(limits=c(a, b))
+  
+  plot.above=
+    weight_growth.new%>%
+    filter(ID %not_in% cutpoint$ID)%>%
+    ggplot()+
+    geom_line(aes(x=month, y=eval(y), group=ID, color=ID), show.legend = FALSE)+
+    geom_line(data=mean.data, aes(x=month, y=eval(y)), color='black', size=2)+
+    scale_y_continuous(limits=c(a, b))
+  
+  cowplot::plot_grid(plot.below, plot.above, labels=c('above', 'below'))
+}
+
+
